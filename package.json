@@ -1,0 +1,18 @@
+{
+  "name": "happy_2.0_backend",
+  "version": "1.0.0",
+  "description": "nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "die-goncalves/happy_2.0.backend"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "Diego Gonçalves",
+  "license": "ISC"
+}
