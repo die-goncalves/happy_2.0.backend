@@ -14,5 +14,9 @@
     "nodejs"
   ],
   "author": "Diego Gonçalves",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/typescript": "^2.0.0",
+    "typescript": "^4.1.2"
+  }
 }
