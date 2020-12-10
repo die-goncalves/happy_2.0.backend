@@ -1,16 +1,17 @@
 import './util/module-alias';
 import { Server } from '@overnightjs/core';
 import bodyParser from 'body-parser';
+import * as database from '@src/database';
 
 export class SetupServer extends Server {
   constructor(private port = 3000) {
     super();
   }
 
-  public init(): void {
+  public async init(): Promise<void> {
     this.setupExpress();
     this.setupControllers();
-    this.setupDatabase();
+    await this.setupDatabase();
   }
 
   private setupExpress(): void {
@@ -18,7 +19,12 @@ export class SetupServer extends Server {
   }
 
   private setupControllers(): void {}
-  private setupDatabase(): void {}
+
+  private async setupDatabase(): Promise<void> {
+    await database
+      .connect()
+      .then(() => console.log('📦 Successfully connected with database'));
+  }
 
   public start(): void {
     this.app.listen(this.port, () => {
