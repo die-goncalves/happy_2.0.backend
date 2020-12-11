@@ -62,3 +62,7 @@ typings/
 
 # typescript compiled code
 dist/
+
+# local files
+#   Multi Instance Deployments
+config/*-[0-9].yml
