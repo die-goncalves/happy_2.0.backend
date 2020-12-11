@@ -1,0 +1,4 @@
+App: 
+  port: APP_PORT
+  database: 
+    mongoUrl: MONGODB_URL
