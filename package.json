@@ -4,8 +4,8 @@
   "description": "nodejs",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
-    "test": "jest --projects ./test --runInBand",
+    "dev": "NODE_ENV=development NODE_APP_INSTANCE=1 ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
+    "test": "NODE_ENV=test NODE_APP_INSTANCE=1 jest --projects ./test --runInBand",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "format": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
