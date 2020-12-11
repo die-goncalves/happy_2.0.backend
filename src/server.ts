@@ -2,9 +2,12 @@ import './util/module-alias';
 import { Server } from '@overnightjs/core';
 import bodyParser from 'body-parser';
 import * as database from '@src/database';
+import config, { IConfig } from 'config';
+
+const serverConfig: IConfig = config.get('App');
 
 export class SetupServer extends Server {
-  constructor(private port = 3000) {
+  constructor(private port = serverConfig.get('port')) {
     super();
   }
 
