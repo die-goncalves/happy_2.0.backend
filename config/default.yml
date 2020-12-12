@@ -2,3 +2,6 @@ App:
   port: 
   database:
     mongoUrl: 
+  logger:
+    enabled: true
+    level: "info"

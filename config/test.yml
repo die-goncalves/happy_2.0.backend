@@ -1,3 +1,5 @@
 App: 
   database: 
     mongoUrl: "mongodb://localhost:27017/happy_2-backend-test"
+  logger:
+    enabled: false
