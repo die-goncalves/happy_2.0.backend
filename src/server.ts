@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import * as database from '@src/database';
 import config, { IConfig } from 'config';
 import logger from './logger';
+import expressPino from 'express-pino-logger';
 
 const serverConfig: IConfig = config.get('App');
 
@@ -20,6 +21,11 @@ export class SetupServer extends Server {
 
   private setupExpress(): void {
     this.app.use(bodyParser.json());
+    this.app.use(
+      expressPino({
+        logger,
+      })
+    );
   }
 
   private setupControllers(): void {}
