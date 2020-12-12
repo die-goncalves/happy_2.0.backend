@@ -3,6 +3,7 @@ import { Server } from '@overnightjs/core';
 import bodyParser from 'body-parser';
 import * as database from '@src/database';
 import config, { IConfig } from 'config';
+import logger from './logger';
 
 const serverConfig: IConfig = config.get('App');
 
@@ -26,13 +27,12 @@ export class SetupServer extends Server {
   private async setupDatabase(): Promise<void> {
     await database
       .connect()
-      .then(() => console.log('📦 Successfully connected with database'));
+      .then(() => logger.info('📦 Successfully connected with database'));
   }
 
   public start(): void {
     this.app.listen(this.port, () => {
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      console.log('🌩️ Server listening on port: ' + this.port);
+      logger.info(`🌩️ Server listening on port: ${this.port}`);
     });
   }
 }
