@@ -4,7 +4,7 @@
   "description": "nodejs",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development NODE_APP_INSTANCE=1 ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
+    "dev": "NODE_ENV=development NODE_APP_INSTANCE=1 ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts | pino-pretty -c",
     "test": "NODE_ENV=test NODE_APP_INSTANCE=1 jest --projects ./test --runInBand",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
