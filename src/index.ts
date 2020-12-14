@@ -8,6 +8,20 @@ enum ExitStatus {
   Success = 0,
 }
 
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error(
+    `The application was shut down due to an unhandled promise: ${promise} and reason: ${reason}`
+  );
+  throw reason;
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error(
+    `The application was shut down due to an uncaught exception: ${error}`
+  );
+  process.exit(ExitStatus.Failure);
+});
+
 (async (): Promise<void> => {
   try {
     const server = new SetupServer(config.get('App.port'));
