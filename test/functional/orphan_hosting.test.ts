@@ -1,4 +1,10 @@
+import { OrphanHosting } from '@src/models/OrphanHosting';
+
 describe('Controllers: Orphan Hosting', () => {
+  beforeEach(async () => {
+    await OrphanHosting.deleteMany({});
+  });
+
   describe('Create a new orphan hosting', () => {
     test('should successfully create a new orphan hosting', async () => {
       const newOrphanHosting = {
@@ -15,7 +21,7 @@ describe('Controllers: Orphan Hosting', () => {
         .post('/orphan_hosting')
         .send(newOrphanHosting);
       expect(response.status).toBe(201);
-      expect(response.body).toEqual(newOrphanHosting);
+      expect(response.body).toEqual(expect.objectContaining(newOrphanHosting));
     });
   });
 });
