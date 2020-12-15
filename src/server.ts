@@ -7,6 +7,7 @@ import logger from './logger';
 import expressPino from 'express-pino-logger';
 import * as http from 'http';
 import { Application } from 'express';
+import { OrphanHostingController } from './controllers/orphan_hosting';
 
 const serverConfig: IConfig = config.get('App');
 
@@ -32,7 +33,10 @@ export class SetupServer extends Server {
     );
   }
 
-  private setupControllers(): void {}
+  private setupControllers(): void {
+    const orphanhostingController = new OrphanHostingController();
+    this.addControllers([orphanhostingController]);
+  }
 
   private async setupDatabase(): Promise<void> {
     await database
