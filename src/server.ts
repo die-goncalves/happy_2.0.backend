@@ -6,6 +6,7 @@ import config, { IConfig } from 'config';
 import logger from './logger';
 import expressPino from 'express-pino-logger';
 import * as http from 'http';
+import { Application } from 'express';
 
 const serverConfig: IConfig = config.get('App');
 
@@ -57,5 +58,9 @@ export class SetupServer extends Server {
         });
       });
     }
+  }
+
+  public getApp(): Application {
+    return this.app;
   }
 }
