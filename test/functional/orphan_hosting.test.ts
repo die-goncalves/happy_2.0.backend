@@ -23,7 +23,7 @@ describe('Controllers: Orphan Hosting', () => {
 
       const response = await global.testRequest
         .post('/hosting')
-        .send(newOrphanHosting);
+        .field(newOrphanHosting);
       expect(response.status).toBe(201);
       expect(response.body).toEqual(expect.objectContaining(newOrphanHosting));
     });
