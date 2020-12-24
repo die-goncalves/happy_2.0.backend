@@ -1,6 +1,6 @@
 import mongoose, { Document, Model } from 'mongoose';
 
-export interface OrphanHosting {
+export interface hosting {
   _id?: any;
   name: string;
   latitude: number;
@@ -11,7 +11,7 @@ export interface OrphanHosting {
   open_on_weekends: boolean;
 }
 
-const schema = new mongoose.Schema(
+const hostingSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     latitude: { type: Number, required: true },
@@ -22,19 +22,19 @@ const schema = new mongoose.Schema(
     open_on_weekends: { type: Boolean, required: true },
   },
   {
-    toJSON: {
-      transform: (_, ret): void => {
-        ret.id = ret._id;
-        delete ret._id;
+    toObject: {
+      transform: (doc: any, ret: any) => {
+        // ret.id = doc.id;
+        // delete ret._id;
         delete ret.__v;
       },
     },
   }
 );
 
-interface OrphanHostingModel extends OrphanHosting, Document {}
+interface hostingInterface extends hosting, Document {}
 
-export const OrphanHosting: Model<OrphanHostingModel> = mongoose.model(
-  'OrphanHosting',
-  schema
+export const hostingModel: Model<hostingInterface> = mongoose.model(
+  'hosting',
+  hostingSchema
 );

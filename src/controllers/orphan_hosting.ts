@@ -1,12 +1,12 @@
 import { Controller, Post } from '@overnightjs/core';
-import { OrphanHosting } from '@src/models/OrphanHosting';
+import { hostingModel } from '@src/models/orphanhosting';
 import { Request, Response } from 'express';
 
-@Controller('orphan_hosting')
+@Controller('hosting')
 export class OrphanHostingController {
   @Post('')
   public async create(req: Request, res: Response): Promise<void> {
-    const orphan_hosting = new OrphanHosting(req.body);
+    const orphan_hosting = new hostingModel(req.body);
     const result = await orphan_hosting.save();
     res.status(201).send(result);
   }
