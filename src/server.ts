@@ -1,6 +1,5 @@
 import './util/module-alias';
 import { Server } from '@overnightjs/core';
-import bodyParser from 'body-parser';
 import * as database from '@src/database';
 import config, { IConfig } from 'config';
 import logger from './logger';
@@ -8,7 +7,10 @@ import expressPino from 'express-pino-logger';
 import * as http from 'http';
 import { Application } from 'express';
 import { OrphanHostingController } from './controllers/orphan_hosting';
+import multer from 'multer';
+import uploadConfig from '@src/util/upload';
 
+const upload = multer(uploadConfig);
 const serverConfig: IConfig = config.get('App');
 
 export class SetupServer extends Server {
@@ -25,7 +27,7 @@ export class SetupServer extends Server {
   }
 
   private setupExpress(): void {
-    this.app.use(bodyParser.json());
+    this.app.use(upload.array('pictures'));
     this.app.use(
       expressPino({
         logger,
