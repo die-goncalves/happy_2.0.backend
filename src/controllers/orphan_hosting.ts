@@ -1,5 +1,6 @@
 import { Controller, Post } from '@overnightjs/core';
-import { hosting, hostingModel } from '@src/models/orphanhosting';
+import { hostingModel } from '@src/models/orphanhosting';
+import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 
 @Controller('hosting')
@@ -11,22 +12,26 @@ export class OrphanHostingController {
     res.status(201).send(result);
   }
   @Post('create')
-  public set(req: Request, res: Response): void {
+  public async upload_files(req: Request, res: Response): Promise<void> {
     const photo_data = new Array();
 
-    const storedData: hosting = {
-      name: req.body.name,
-      latitude: Number(req.body.latitude),
-      longitude: Number(req.body.longitude),
-      about: req.body.about,
-      instructions: req.body.instructions,
-      opening_hours: req.body.opening_hours,
-      open_on_weekends: req.body.open_on_weekends === 'true',
-    };
-
+    const storedData = new hostingModel(req.body);
+    await storedData.save();
     const photos = req.files as Express.Multer.File[];
-    photo_data.push({ filename: photos[0].filename });
-    const result = { ...storedData, pictures: photo_data };
+    photos.map(async (photo) => {
+      const storedPhoto = new pictureModel({
+        _idHosting: storedData,
+        destination: photo.destination,
+        filename: photo.filename,
+        size: photo.size,
+      });
+      photo_data.push({ filename: photo.filename, _id: storedPhoto._id });
+      await storedPhoto.save();
+    });
+    const result =
+      photo_data.length == 0
+        ? { ...storedData.toObject() }
+        : { ...storedData.toObject(), pictures: photo_data };
     res.status(201).send(result);
   }
 }
