@@ -1,4 +1,4 @@
-import { Controller, Post } from '@overnightjs/core';
+import { Controller, Get, Post } from '@overnightjs/core';
 import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
@@ -33,5 +33,18 @@ export class OrphanHostingController {
         ? { ...storedData.toObject() }
         : { ...storedData.toObject(), pictures: photo_data };
     res.status(201).send(result);
+  }
+  @Get('show')
+  public async show(req: Request, res: Response): Promise<void> {
+    const foundHosting = await hostingModel.findById(req.query._id);
+    const foundPictures = await pictureModel.find({
+      _idHosting: req.query._id,
+    });
+    const foundPicturesObjects = foundPictures.map((pics) => pics.toObject());
+    const result =
+      foundPictures.length == 0
+        ? { ...foundHosting?.toObject() }
+        : { ...foundHosting?.toObject(), pictures: foundPicturesObjects };
+    res.status(200).send(result);
   }
 }
