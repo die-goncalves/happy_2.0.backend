@@ -2,14 +2,15 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface picture {
   _id?: any;
-  path: string;
+  destination: string;
+  filename: string;
 }
 
 const pictureSchema = new mongoose.Schema(
   {
     _idHosting: {
       type: Schema.Types.ObjectId,
-      ref: 'OrphanHostingImage',
+      ref: 'hosting',
       required: true,
     },
     destination: { type: String, required: true },

@@ -105,7 +105,6 @@ describe('Controllers: Orphan Hosting', () => {
       const response = await global.testRequest
         .get('/hosting/show')
         .query({ _id: newHosting._id.toHexString() });
-
       expect(response.status).toBe(200);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -124,10 +123,8 @@ describe('Controllers: Orphan Hosting', () => {
           pictures: expect.arrayContaining([
             expect.objectContaining({
               _id: newPictures_1._id.toHexString(),
-              _idHosting: newHosting._id.toHexString(),
               destination: 'sample-destination_1',
               filename: 'sample-filename_1',
-              size: 8888,
             }),
           ]),
         })
@@ -137,10 +134,8 @@ describe('Controllers: Orphan Hosting', () => {
           pictures: expect.arrayContaining([
             expect.objectContaining({
               _id: newPictures_2._id.toHexString(),
-              _idHosting: newHosting._id.toHexString(),
               destination: 'sample-destination_2',
               filename: 'sample-filename_2',
-              size: 9999,
             }),
           ]),
         })

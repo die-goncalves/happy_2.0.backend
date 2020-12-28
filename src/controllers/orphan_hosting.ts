@@ -1,7 +1,8 @@
 import { Controller, Get, Post } from '@overnightjs/core';
-import { hostingModel } from '@src/models/orphanhosting';
+import { hosting, hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
+import host from '@src/view/host';
 
 @Controller('hosting')
 export class OrphanHostingController {
@@ -25,7 +26,11 @@ export class OrphanHostingController {
         filename: photo.filename,
         size: photo.size,
       });
-      photo_data.push({ filename: photo.filename, _id: storedPhoto._id });
+      photo_data.push({
+        _id: storedPhoto._id,
+        destination: photo.destination,
+        filename: photo.filename,
+      });
       await storedPhoto.save();
     });
     const result =
@@ -36,15 +41,7 @@ export class OrphanHostingController {
   }
   @Get('show')
   public async show(req: Request, res: Response): Promise<void> {
-    const foundHosting = await hostingModel.findById(req.query._id);
-    const foundPictures = await pictureModel.find({
-      _idHosting: req.query._id,
-    });
-    const foundPicturesObjects = foundPictures.map((pics) => pics.toObject());
-    const result =
-      foundPictures.length == 0
-        ? { ...foundHosting?.toObject() }
-        : { ...foundHosting?.toObject(), pictures: foundPicturesObjects };
+    const result = await host.specificHosting(String(req.query._id));
     res.status(200).send(result);
   }
 }
