@@ -6,14 +6,8 @@ import host from '@src/view/host';
 
 @Controller('hosting')
 export class OrphanHostingController {
-  @Post('')
-  public async create(req: Request, res: Response): Promise<void> {
-    const orphan_hosting = new hostingModel(req.body);
-    const result = await orphan_hosting.save();
-    res.status(201).send(result);
-  }
   @Post('create')
-  public async upload_files(req: Request, res: Response): Promise<void> {
+  public async create(req: Request, res: Response): Promise<void> {
     const photo_data = new Array();
 
     const storedData = new hostingModel(req.body);
