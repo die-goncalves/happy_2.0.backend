@@ -141,5 +141,86 @@ describe('Controllers: Orphan Hosting', () => {
         })
       );
     });
+
+    test('should successfully show all orphan hosting', async () => {
+      const defaultHosting_a = {
+        _id: new mongoose.Types.ObjectId('000000000000000000000000'),
+        name: 'sample-name-a',
+        latitude: -10.660795923446559,
+        longitude: -14.784882579454477,
+        about: 'sample-about-a',
+        instructions: 'sample-instructions-a',
+        opening_hours: 'sample-availableTime-a',
+        open_on_weekends: false,
+      };
+      const newHosting_a = await new hostingModel(defaultHosting_a).save();
+      const defaultPicture_a1 = {
+        _id: new mongoose.Types.ObjectId('000000000000000000000001'),
+        _idHosting: newHosting_a._id,
+        destination: 'sample-destination_a1',
+        filename: 'sample-filename_a1',
+        size: 8888,
+      };
+      const defaultPicture_a2 = {
+        _id: new mongoose.Types.ObjectId('000000000000000000000002'),
+        _idHosting: newHosting_a._id,
+        destination: 'sample-destination_a2',
+        filename: 'sample-filename_a2',
+        size: 9999,
+      };
+      const newPictures_a1 = await new pictureModel(defaultPicture_a1).save();
+      const newPictures_a2 = await new pictureModel(defaultPicture_a2).save();
+
+      const defaultHosting_b = {
+        _id: new mongoose.Types.ObjectId('000000000000000000000010'),
+        name: 'sample-name-b',
+        latitude: -11.660795923446559,
+        longitude: -15.784882579454477,
+        about: 'sample-about-b',
+        instructions: 'sample-instructions-b',
+        opening_hours: 'sample-availableTime-b',
+        open_on_weekends: true,
+      };
+      const newHosting_b = await new hostingModel(defaultHosting_b).save();
+
+      const response = await global.testRequest.get('/hosting');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          {
+            _id: '000000000000000000000000',
+            name: 'sample-name-a',
+            latitude: -10.660795923446559,
+            longitude: -14.784882579454477,
+            about: 'sample-about-a',
+            instructions: 'sample-instructions-a',
+            opening_hours: 'sample-availableTime-a',
+            open_on_weekends: false,
+            pictures: [
+              {
+                _id: '000000000000000000000001',
+                destination: 'sample-destination_a1',
+                filename: 'sample-filename_a1',
+              },
+              {
+                _id: '000000000000000000000002',
+                destination: 'sample-destination_a2',
+                filename: 'sample-filename_a2',
+              },
+            ],
+          },
+          {
+            _id: '000000000000000000000010',
+            name: 'sample-name-b',
+            latitude: -11.660795923446559,
+            longitude: -15.784882579454477,
+            about: 'sample-about-b',
+            instructions: 'sample-instructions-b',
+            opening_hours: 'sample-availableTime-b',
+            open_on_weekends: true,
+          },
+        ])
+      );
+    });
   });
 });
