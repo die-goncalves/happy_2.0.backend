@@ -205,4 +205,23 @@ describe('Controllers: Orphan Hosting', () => {
       );
     });
   });
+
+  describe('Error handling', () => {
+    test('should return a validation error when a field is missing', async () => {
+      const response = await global.testRequest
+        .post('/hosting/create')
+        .field('name', 'sample-name')
+        .field('longitude', -14.784882579454477)
+        .field('about', 'sample-about')
+        .field('instructions', 'sample-instructions')
+        .field('opening_hours', 'sample-availableTime')
+        .field('open_on_weekends', false);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error:
+          'hosting validation failed: latitude: Path `latitude` is required.',
+      });
+    });
+  });
 });
