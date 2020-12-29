@@ -8,30 +8,34 @@ import host from '@src/view/host';
 export class OrphanHostingController {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
-    const photo_data = new Array();
+    try {
+      const photo_data = new Array();
 
-    const storedData = new hostingModel(req.body);
-    await storedData.save();
-    const photos = req.files as Express.Multer.File[];
-    photos.map(async (photo) => {
-      const storedPhoto = new pictureModel({
-        _idHosting: storedData,
-        destination: photo.destination,
-        filename: photo.filename,
-        size: photo.size,
+      const storedData = new hostingModel(req.body);
+      await storedData.save();
+      const photos = req.files as Express.Multer.File[];
+      photos.map(async (photo) => {
+        const storedPhoto = new pictureModel({
+          _idHosting: storedData,
+          destination: photo.destination,
+          filename: photo.filename,
+          size: photo.size,
+        });
+        photo_data.push({
+          _id: storedPhoto._id,
+          destination: photo.destination,
+          filename: photo.filename,
+        });
+        await storedPhoto.save();
       });
-      photo_data.push({
-        _id: storedPhoto._id,
-        destination: photo.destination,
-        filename: photo.filename,
-      });
-      await storedPhoto.save();
-    });
-    const result =
-      photo_data.length == 0
-        ? { ...storedData.toObject() }
-        : { ...storedData.toObject(), pictures: photo_data };
-    res.status(201).send(result);
+      const result =
+        photo_data.length == 0
+          ? { ...storedData.toObject() }
+          : { ...storedData.toObject(), pictures: photo_data };
+      res.status(201).send(result);
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
   }
   @Get('show')
   public async show(req: Request, res: Response): Promise<void> {
