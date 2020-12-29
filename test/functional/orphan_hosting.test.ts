@@ -219,7 +219,8 @@ describe('Controllers: Orphan Hosting', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error:
+        code: 400,
+        message:
           'hosting validation failed: latitude: Path `latitude` is required.',
       });
     });

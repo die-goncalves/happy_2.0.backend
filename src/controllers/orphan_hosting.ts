@@ -3,9 +3,10 @@ import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 import host from '@src/view/host';
+import { BaseController } from '@src/controllers/index';
 
 @Controller('hosting')
-export class OrphanHostingController {
+export class OrphanHostingController extends BaseController {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
     try {
@@ -34,7 +35,7 @@ export class OrphanHostingController {
           : { ...storedData.toObject(), pictures: photo_data };
       res.status(201).send(result);
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      this.sendErrorResponse(res, error);
     }
   }
   @Get('show')
