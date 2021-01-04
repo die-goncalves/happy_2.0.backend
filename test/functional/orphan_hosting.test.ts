@@ -225,5 +225,34 @@ describe('Controllers: Orphan Hosting', () => {
         name: 'UNPROCESSABLE_ENTITY',
       });
     });
+
+    test('should return 500 when there is any error other than validation error', async () => {
+      jest
+        .spyOn(hostingModel.prototype, 'save')
+        .mockImplementationOnce(async () => {
+          return await new Promise((resolve, reject) =>
+            reject(new Error('fail to create host'))
+          );
+        });
+
+      const filePath = `${__dirname}/files/apples.jpg`;
+      const response = await global.testRequest
+        .post('/hosting/create')
+        .field('name', 'sample-name')
+        .field('latitude', -10.660795923446559)
+        .field('longitude', -14.784882579454477)
+        .field('about', 'sample-about')
+        .field('instructions', 'sample-instructions')
+        .field('opening_hours', 'sample-availableTime')
+        .field('open_on_weekends', false)
+        .attach('pictures', filePath);
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({
+        code: 500,
+        name: 'INTERNAL_SERVER_ERROR',
+        message: 'fail to create host',
+      });
+    });
   });
 });
