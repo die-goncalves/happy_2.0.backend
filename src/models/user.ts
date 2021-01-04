@@ -1,3 +1,5 @@
+import logger from '@src/logger';
+import AuthService from '@src/services/auth';
 import mongoose, { Document, Model } from 'mongoose';
 
 export interface user {
@@ -9,7 +11,7 @@ export interface user {
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    username: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
   },
@@ -23,6 +25,19 @@ const userSchema = new mongoose.Schema(
     },
   }
 );
+
+userSchema.pre<userInterface>('save', async function (): Promise<void> {
+  // only hash the password if it has been modified or is new
+  if (!this.isModified('password')) {
+    return;
+  }
+  try {
+    const hashedPassword = await AuthService.hashPassword(this.password);
+    this.password = hashedPassword;
+  } catch (err) {
+    logger.error(`Error hashing the password for the user ${this.username}`);
+  }
+});
 
 interface userInterface extends user, Document {}
 

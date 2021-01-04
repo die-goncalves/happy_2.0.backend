@@ -7,7 +7,7 @@ describe('Controllers: Users', () => {
   describe('Create a new user', () => {
     it('should successfully create a new user', async () => {
       const defaultUser = {
-        name: 'John Doe',
+        username: 'John Doe',
         email: 'john@mail.com',
         password: '1234',
       };
