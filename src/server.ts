@@ -9,6 +9,7 @@ import { Application } from 'express';
 import { OrphanHostingController } from './controllers/orphan_hosting';
 import multer from 'multer';
 import uploadConfig from '@src/util/upload';
+import { UserController } from './controllers/users';
 
 const upload = multer(uploadConfig);
 const serverConfig: IConfig = config.get('App');
@@ -37,7 +38,8 @@ export class SetupServer extends Server {
 
   private setupControllers(): void {
     const orphanhostingController = new OrphanHostingController();
-    this.addControllers([orphanhostingController]);
+    const userController = new UserController();
+    this.addControllers([orphanhostingController, userController]);
   }
 
   private async setupDatabase(): Promise<void> {
