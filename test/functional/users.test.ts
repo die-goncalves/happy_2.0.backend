@@ -1,4 +1,5 @@
 import { userModel } from '@src/models/user';
+import AuthService from '@src/services/auth';
 
 describe('Controllers: Users', () => {
   beforeEach(async () => {
@@ -14,10 +15,18 @@ describe('Controllers: Users', () => {
       const response = await global.testRequest
         .post('/user/create')
         .field(defaultUser);
+
       expect(response.status).toBe(201);
+      await expect(
+        AuthService.comparePasswords(
+          defaultUser.password,
+          response.body.password
+        )
+      ).resolves.toBeTruthy();
       expect(response.body).toEqual(
         expect.objectContaining({
           ...defaultUser,
+          ...{ password: expect.any(String) },
         })
       );
     });
