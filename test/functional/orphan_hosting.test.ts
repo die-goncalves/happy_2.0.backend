@@ -217,11 +217,12 @@ describe('Controllers: Orphan Hosting', () => {
         .field('opening_hours', 'sample-availableTime')
         .field('open_on_weekends', false);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(422);
       expect(response.body).toEqual({
-        code: 400,
+        code: 422,
         message:
           'hosting validation failed: latitude: Path `latitude` is required.',
+        name: 'UNPROCESSABLE_ENTITY',
       });
     });
   });

@@ -3,10 +3,10 @@ import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 import host from '@src/view/host';
-import { BaseController } from '@src/controllers/index';
+import { NestErrors } from '@src/util/errors/NestErrors';
 
 @Controller('hosting')
-export class OrphanHostingController extends BaseController {
+export class OrphanHostingController extends NestErrors {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
     try {
@@ -35,7 +35,7 @@ export class OrphanHostingController extends BaseController {
           : { ...storedData.toObject(), pictures: photo_data };
       res.status(201).send(result);
     } catch (error) {
-      this.sendErrorResponse(res, error);
+      this.sendValidationErrorResponse(res, error);
     }
   }
   @Get('show')
