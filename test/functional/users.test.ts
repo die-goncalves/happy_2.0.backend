@@ -75,4 +75,23 @@ describe('Controllers: Users', () => {
       });
     });
   });
+
+  describe('Authenticate user', () => {
+    test('should generate a token for a valid user', async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      await new userModel(defaultUser).save();
+
+      const response = await global.testRequest
+        .post('/user/authenticate')
+        .send({ email: defaultUser.email, password: defaultUser.password });
+
+      expect(response.body).toEqual(
+        expect.objectContaining({ token: expect.any(String) })
+      );
+    });
+  });
 });
