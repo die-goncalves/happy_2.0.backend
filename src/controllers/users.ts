@@ -2,6 +2,7 @@ import { Controller, Post } from '@overnightjs/core';
 import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
 import { NestErrors } from '@src/util/errors/NestErrors';
+import AuthService from '@src/services/auth';
 
 @Controller('user')
 export class UserController extends NestErrors {
@@ -16,7 +17,23 @@ export class UserController extends NestErrors {
     }
   }
   @Post('authenticate')
-  public authenticate(req: Request, res: Response): void {
-    res.status(200).send({ token: 'fake-token' });
+  public async authenticate(req: Request, res: Response): Promise<void> {
+    const { email, password } = req.body;
+
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return;
+    }
+
+    const isValidPassword = await AuthService.comparePasswords(
+      password,
+      user.password
+    );
+    if (!isValidPassword) {
+      return;
+    }
+
+    const token = AuthService.generateToken(user.toObject());
+    res.status(200).send({ token: token });
   }
 }
