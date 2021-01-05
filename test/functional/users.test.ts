@@ -87,8 +87,7 @@ describe('Controllers: Users', () => {
 
       const response = await global.testRequest
         .post('/user/authenticate')
-        .send({ email: defaultUser.email, password: defaultUser.password });
-
+        .field({ email: defaultUser.email, password: defaultUser.password });
       expect(response.body).toEqual(
         expect.objectContaining({ token: expect.any(String) })
       );
