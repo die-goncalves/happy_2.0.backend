@@ -48,5 +48,31 @@ describe('Controllers: Users', () => {
         name: 'UNPROCESSABLE_ENTITY',
       });
     });
+
+    test('should return 500 when there is any error other than validation error', async () => {
+      jest
+        .spyOn(userModel.prototype, 'save')
+        .mockImplementationOnce(async () => {
+          return await new Promise((resolve, reject) =>
+            reject(new Error('fail to create user'))
+          );
+        });
+
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      const response = await global.testRequest
+        .post('/user/create')
+        .field(defaultUser);
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({
+        code: 500,
+        name: 'INTERNAL_SERVER_ERROR',
+        message: 'fail to create user',
+      });
+    });
   });
 });
