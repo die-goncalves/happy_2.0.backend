@@ -5,3 +5,6 @@ App:
   logger:
     enabled: true
     level: "info"
+  auth:
+    key:
+    tokenExpiresIn: 
