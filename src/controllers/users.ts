@@ -15,4 +15,8 @@ export class UserController extends NestErrors {
       this.sendValidationErrorResponse(res, error);
     }
   }
+  @Post('authenticate')
+  public authenticate(req: Request, res: Response): void {
+    res.status(200).send({ token: 'fake-token' });
+  }
 }
