@@ -103,5 +103,24 @@ describe('Controllers: Users', () => {
         name: 'UNAUTHORIZED',
       });
     });
+    test('should return UNAUTHORIZED if the user is found but the password does not match', async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      await new userModel(defaultUser).save();
+
+      const response = await global.testRequest
+        .post('/user/authenticate')
+        .field({ email: defaultUser.email, password: 'different password' });
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({
+        code: 401,
+        message: 'passwords does not match!',
+        name: 'UNAUTHORIZED',
+      });
+    });
   });
 });
