@@ -18,22 +18,26 @@ export class UserController extends NestErrors {
   }
   @Post('authenticate')
   public async authenticate(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body;
+    try {
+      const { email, password } = req.body;
 
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return;
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        throw new Error('user not found!');
+      }
+
+      const isValidPassword = await AuthService.comparePasswords(
+        password,
+        user.password
+      );
+      if (!isValidPassword) {
+        return;
+      }
+
+      const token = AuthService.generateToken(user.toObject());
+      res.status(200).send({ token: token });
+    } catch (error) {
+      this.sendUnauthorizedErrorResponse(res, error);
     }
-
-    const isValidPassword = await AuthService.comparePasswords(
-      password,
-      user.password
-    );
-    if (!isValidPassword) {
-      return;
-    }
-
-    const token = AuthService.generateToken(user.toObject());
-    res.status(200).send({ token: token });
   }
 }

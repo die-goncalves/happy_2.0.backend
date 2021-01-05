@@ -19,4 +19,11 @@ export abstract class NestErrors {
         .send(ArchetypeError.pack({ code: 500, message: error.message }));
     }
   }
+
+  protected sendUnauthorizedErrorResponse(res: Response, error: Error): void {
+    logger.error(error);
+    res
+      .status(401)
+      .send(ArchetypeError.pack({ code: 401, message: error.message }));
+  }
 }
