@@ -31,7 +31,7 @@ export class UserController extends NestErrors {
         user.password
       );
       if (!isValidPassword) {
-        return;
+        throw new Error('passwords does not match!');
       }
 
       const token = AuthService.generateToken(user.toObject());
