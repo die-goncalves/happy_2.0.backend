@@ -92,5 +92,16 @@ describe('Controllers: Users', () => {
         expect.objectContaining({ token: expect.any(String) })
       );
     });
+    test('should return UNAUTHORIZED if the user with the given email is not found', async () => {
+      const response = await global.testRequest
+        .post('/user/authenticate')
+        .field({ email: 'sample-email@mail.com', password: '1234' });
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({
+        code: 401,
+        message: 'user not found!',
+        name: 'UNAUTHORIZED',
+      });
+    });
   });
 });
