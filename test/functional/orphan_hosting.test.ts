@@ -1,11 +1,21 @@
 import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
+import { userModel } from '@src/models/user';
+import AuthService from '@src/services/auth';
 import mongoose from 'mongoose';
 
 describe('Controllers: Orphan Hosting', () => {
+  const defaultUser = {
+    username: 'John Doe',
+    email: 'john2@mail.com',
+    password: '1234',
+  };
+  let token: string;
   beforeEach(async () => {
     await hostingModel.deleteMany({});
     await pictureModel.deleteMany({});
+    const user = await new userModel(defaultUser).save();
+    token = AuthService.generateToken(user.toObject());
   });
 
   describe('Create a new orphan hosting', () => {
@@ -17,6 +27,7 @@ describe('Controllers: Orphan Hosting', () => {
       const filePath = `${__dirname}/files/apples.jpg`;
       const response = await global.testRequest
         .post('/hosting/create')
+        .set({ authorization: `Bearer ${token}` })
         .field('name', 'sample-name')
         .field('latitude', -10.660795923446559)
         .field('longitude', -14.784882579454477)
@@ -46,7 +57,6 @@ describe('Controllers: Orphan Hosting', () => {
       );
       global.Date.now = realDateNow;
     });
-
     test('should successfully show a specific orphan hosting', async () => {
       const defaultHosting = {
         _id: new mongoose.Types.ObjectId('000000000000000000000000'),
@@ -86,6 +96,7 @@ describe('Controllers: Orphan Hosting', () => {
        */
       const response = await global.testRequest
         .get('/hosting/show')
+        .set({ authorization: `Bearer ${token}` })
         .query({ _id: newHosting._id.toHexString() });
       expect(response.status).toBe(200);
       expect(response.body).toEqual(
@@ -123,7 +134,6 @@ describe('Controllers: Orphan Hosting', () => {
         })
       );
     });
-
     test('should successfully show all orphan hosting', async () => {
       const defaultHosting_a = {
         _id: new mongoose.Types.ObjectId('000000000000000000000000'),
@@ -165,7 +175,9 @@ describe('Controllers: Orphan Hosting', () => {
       };
       const newHosting_b = await new hostingModel(defaultHosting_b).save();
 
-      const response = await global.testRequest.get('/hosting');
+      const response = await global.testRequest
+        .get('/hosting')
+        .set({ authorization: `Bearer ${token}` });
       expect(response.status).toBe(200);
       expect(response.body).toEqual(
         expect.arrayContaining([
@@ -210,6 +222,7 @@ describe('Controllers: Orphan Hosting', () => {
     test('should return a validation error when a field is missing', async () => {
       const response = await global.testRequest
         .post('/hosting/create')
+        .set({ authorization: `Bearer ${token}` })
         .field('name', 'sample-name')
         .field('longitude', -14.784882579454477)
         .field('about', 'sample-about')
@@ -225,7 +238,6 @@ describe('Controllers: Orphan Hosting', () => {
         name: 'UNPROCESSABLE_ENTITY',
       });
     });
-
     test('should return 500 when there is any error other than validation error', async () => {
       jest
         .spyOn(hostingModel.prototype, 'save')
@@ -238,6 +250,7 @@ describe('Controllers: Orphan Hosting', () => {
       const filePath = `${__dirname}/files/apples.jpg`;
       const response = await global.testRequest
         .post('/hosting/create')
+        .set({ authorization: `Bearer ${token}` })
         .field('name', 'sample-name')
         .field('latitude', -10.660795923446559)
         .field('longitude', -14.784882579454477)
