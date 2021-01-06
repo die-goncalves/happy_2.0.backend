@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from 'config';
+import { user } from '@src/models/user';
 
 export default class AuthService {
   public static async hashPassword(
@@ -19,5 +20,8 @@ export default class AuthService {
     return jwt.sign(payload, config.get('App.auth.key'), {
       expiresIn: config.get('App.auth.tokenExpiresIn'),
     });
+  }
+  public static decodeToken(token: string): user {
+    return jwt.verify(token, config.get('App.auth.key')) as user;
   }
 }
