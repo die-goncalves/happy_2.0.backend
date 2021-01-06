@@ -1,11 +1,13 @@
-import { Controller, Get, Post } from '@overnightjs/core';
+import { ClassMiddleware, Controller, Get, Post } from '@overnightjs/core';
 import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 import host from '@src/view/host';
 import { NestErrors } from '@src/util/errors/NestErrors';
+import { authMiddleware } from '@src/middlewares/auth';
 
 @Controller('hosting')
+@ClassMiddleware(authMiddleware)
 export class OrphanHostingController extends NestErrors {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
