@@ -73,6 +73,31 @@ describe('Controllers: Users', () => {
         message: 'fail to create user',
       });
     });
+    test('should return CONFLICT when have the email already registered', async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      await new userModel(defaultUser).save();
+      const newUser = {
+        username: 'John Jones',
+        email: 'john@mail.com',
+        password: '123456',
+      };
+
+      const response = await global.testRequest
+        .post('/user/create')
+        .field(newUser);
+
+      expect(response.status).toBe(409);
+      expect(response.body).toEqual({
+        code: 409,
+        message:
+          'user validation failed: email: There is a user with the same email.',
+        name: 'CONFLICT',
+      });
+    });
   });
 
   describe('Authenticate user', () => {
