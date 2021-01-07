@@ -5,6 +5,7 @@ describe('Controllers: Users', () => {
   beforeEach(async () => {
     await userModel.deleteMany({});
   });
+
   describe('Create a new user', () => {
     test('should successfully create a new user', async () => {
       const defaultUser = {
@@ -30,7 +31,6 @@ describe('Controllers: Users', () => {
         })
       );
     });
-
     test('should return a validation error when a field is missing', async () => {
       const defaultUser = {
         email: 'john@mail.com',
@@ -48,7 +48,6 @@ describe('Controllers: Users', () => {
         name: 'UNPROCESSABLE_ENTITY',
       });
     });
-
     test('should return 500 when there is any error other than validation error', async () => {
       jest
         .spyOn(userModel.prototype, 'save')
@@ -121,6 +120,30 @@ describe('Controllers: Users', () => {
         message: 'passwords does not match!',
         name: 'UNAUTHORIZED',
       });
+    });
+  });
+
+  describe('User profile info', () => {
+    test("should return the token's owner profile information", async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      const user = await new userModel(defaultUser).save();
+      const token = AuthService.generateToken(user.toObject());
+
+      const response = await global.testRequest
+        .get('/user/me')
+        .set({ authorization: `Bearer ${token}` });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          ...user.toObject(),
+          ...{ _id: user._id.toHexString() },
+        })
+      );
     });
   });
 });
