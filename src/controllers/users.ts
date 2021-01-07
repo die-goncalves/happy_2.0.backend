@@ -44,13 +44,15 @@ export class UserController extends NestErrors {
   @Get('me')
   @Middleware(authMiddleware)
   public async me(req: Request, res: Response): Promise<void> {
-    const id = req.decoded ? req.decoded._id : undefined;
-    const user = await userModel.findById(id);
-    if (!user) {
-      res
-        .status(404)
-        .send({ code: 404, name: 'NOT_FOUND', message: 'user not found!' });
+    try {
+      const id = req.decoded ? req.decoded._id : undefined;
+      const user = await userModel.findById(id);
+      if (!user) {
+        throw new Error('user not found!');
+      }
+      res.status(200).send(user?.toObject());
+    } catch (error) {
+      this.sendNotFoundErrorResponse(res, error);
     }
-    res.status(200).send(user?.toObject());
   }
 }
