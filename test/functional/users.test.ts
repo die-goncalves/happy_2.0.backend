@@ -145,5 +145,25 @@ describe('Controllers: Users', () => {
         })
       );
     });
+    test('should return not found, when the user is not found', async () => {
+      const defaultUser = {
+        name: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      const user = new userModel(defaultUser);
+      const token = AuthService.generateToken(user.toObject());
+
+      const response = await global.testRequest
+        .get('/user/me')
+        .set({ authorization: `Bearer ${token}` });
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({
+        code: 404,
+        name: 'NOT_FOUND',
+        message: 'user not found!',
+      });
+    });
   });
 });
