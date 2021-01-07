@@ -1,8 +1,9 @@
-import { Controller, Post } from '@overnightjs/core';
+import { Controller, Get, Middleware, Post } from '@overnightjs/core';
 import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
 import { NestErrors } from '@src/util/errors/NestErrors';
 import AuthService from '@src/services/auth';
+import { authMiddleware } from '@src/middlewares/auth';
 
 @Controller('user')
 export class UserController extends NestErrors {
@@ -11,7 +12,7 @@ export class UserController extends NestErrors {
     try {
       const user = new userModel(req.body);
       const newUser = await user.save();
-      res.status(201).send(newUser);
+      res.status(201).send(newUser.toObject());
     } catch (error) {
       this.sendValidationErrorResponse(res, error);
     }
@@ -39,5 +40,13 @@ export class UserController extends NestErrors {
     } catch (error) {
       this.sendUnauthorizedErrorResponse(res, error);
     }
+  }
+  @Get('me')
+  @Middleware(authMiddleware)
+  public async me(req: Request, res: Response): Promise<void> {
+    const id = req.decoded ? req.decoded._id : undefined;
+    const user = await userModel.findById(id);
+
+    res.status(200).send(user?.toObject());
   }
 }
