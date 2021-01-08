@@ -1,8 +1,13 @@
 import * as http from 'http';
-import { user } from '@src/models/user';
+
+interface decodedToken {
+  _id: string;
+  iat: number;
+  exp: number;
+}
 
 declare module 'express-serve-static-core' {
   export interface Request extends http.IncomingMessage, Express.Request {
-    decoded?: user;
+    decoded?: decodedToken;
   }
 }

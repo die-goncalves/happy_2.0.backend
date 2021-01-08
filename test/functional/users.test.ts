@@ -156,7 +156,7 @@ describe('Controllers: Users', () => {
         password: '1234',
       };
       const user = await new userModel(defaultUser).save();
-      const token = AuthService.generateToken(user.toObject());
+      const token = AuthService.generateToken({ _id: user._id });
 
       const response = await global.testRequest
         .get('/user/me')
@@ -177,7 +177,7 @@ describe('Controllers: Users', () => {
         password: '1234',
       };
       const user = new userModel(defaultUser);
-      const token = AuthService.generateToken(user.toObject());
+      const token = AuthService.generateToken({ _id: user._id });
 
       const response = await global.testRequest
         .get('/user/me')

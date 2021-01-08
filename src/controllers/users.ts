@@ -35,7 +35,7 @@ export class UserController extends NestErrors {
         throw new Error('passwords does not match!');
       }
 
-      const token = AuthService.generateToken(user.toObject());
+      const token = AuthService.generateToken({ _id: user._id });
       res.status(200).send({ token: token });
     } catch (error) {
       this.sendUnauthorizedErrorResponse(res, error);

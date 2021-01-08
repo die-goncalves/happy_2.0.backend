@@ -16,7 +16,7 @@ describe('Controllers: Orphan Hosting', () => {
     await pictureModel.deleteMany({});
     await userModel.deleteMany({});
     const user = await new userModel(defaultUser).save();
-    token = AuthService.generateToken(user.toObject());
+    token = AuthService.generateToken({ _id: user._id });
   });
 
   describe('Create a new orphan hosting', () => {
