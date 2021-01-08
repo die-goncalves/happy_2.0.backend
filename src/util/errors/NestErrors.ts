@@ -10,9 +10,10 @@ export abstract class NestErrors {
   ): void {
     logger.error(error);
     if (error instanceof mongoose.Error.ValidationError) {
+      const identifiedError = this.manyMongooseValidationError(error);
       res
-        .status(422)
-        .send(ArchetypeError.pack({ code: 422, message: error.message }));
+        .status(identifiedError.code)
+        .send(ArchetypeError.pack(identifiedError));
     } else {
       res
         .status(500)
@@ -32,5 +33,20 @@ export abstract class NestErrors {
     res
       .status(404)
       .send(ArchetypeError.pack({ code: 404, message: error.message }));
+  }
+
+  private manyMongooseValidationError(
+    error: mongoose.Error.ValidationError
+  ): { code: number; message: string } {
+    const keys = Object.keys(error.errors)[0];
+    const kinds = error.errors[`${keys}`].kind;
+    switch (kinds) {
+      case 'required':
+        return { code: 422, message: error.message };
+      case 'duplicate':
+        return { code: 409, message: error.message };
+      default:
+        return { code: 400, message: error.message };
+    }
   }
 }
