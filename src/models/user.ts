@@ -12,7 +12,11 @@ export interface user {
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, required: true },
-    email: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     password: { type: String, required: true },
   },
   {
@@ -25,6 +29,19 @@ const userSchema = new mongoose.Schema(
     },
   }
 );
+
+userSchema.path('email').validate({
+  validator: async (email: string) => {
+    const emailCount = await userModel.countDocuments({
+      email,
+    });
+    return !emailCount;
+  },
+  message: function () {
+    return `There is a user with the same email.`;
+  },
+  type: 'duplicate',
+});
 
 userSchema.pre<userInterface>('save', async function (): Promise<void> {
   // only hash the password if it has been modified or is new
