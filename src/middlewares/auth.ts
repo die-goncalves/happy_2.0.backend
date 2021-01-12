@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import AuthService from '@src/services/auth';
 import ArchetypeError from '@src/util/errors/ArchetypeError';
+import { userModel } from '@src/models/user';
 
 export function authMiddleware(
   req: Partial<Request>,
@@ -19,4 +20,15 @@ export function authMiddleware(
       .status?.(401)
       .send(ArchetypeError.pack({ code: 401, message: error.message }));
   }
+}
+
+export async function adm(
+  req: Partial<Request>,
+  res: Partial<Response>,
+  next: NextFunction
+): Promise<void> {
+  const userSpecific = await userModel.findById(req.decoded?._id);
+  const roles = userSpecific?.role;
+  const isAdm = roles?.includes('adm');
+  if (isAdm) next();
 }

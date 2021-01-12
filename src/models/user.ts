@@ -7,6 +7,7 @@ export interface user {
   username: string;
   email: string;
   password: string;
+  role: Array<string>;
 }
 
 const userSchema = new mongoose.Schema(
@@ -18,6 +19,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     password: { type: String, required: true },
+    role: {
+      type: [String],
+      required: true,
+      default: ['usr'],
+      enum: ['usr', 'adm'],
+    },
   },
   {
     toObject: {
