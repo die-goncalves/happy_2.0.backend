@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import config from 'config';
 import { decodedToken } from '@src/@types/express';
 
-export default class AuthService {
+export default class authenticateService {
   public static async hashPassword(
     password: string,
     salt = 10

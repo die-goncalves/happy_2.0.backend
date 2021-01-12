@@ -2,7 +2,7 @@ import { Controller, Get, Middleware, Post } from '@overnightjs/core';
 import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
 import { NestErrors } from '@src/util/errors/NestErrors';
-import AuthService from '@src/services/auth';
+import authenticateService from '@src/services/auth';
 import { authorize } from '@src/middlewares/auth';
 
 @Controller('user')
@@ -27,7 +27,7 @@ export class UserController extends NestErrors {
         throw new Error('user not found!');
       }
 
-      const isValidPassword = await AuthService.comparePasswords(
+      const isValidPassword = await authenticateService.comparePasswords(
         password,
         user.password
       );
@@ -35,7 +35,7 @@ export class UserController extends NestErrors {
         throw new Error('passwords does not match!');
       }
 
-      const token = AuthService.generateToken({ _id: user._id });
+      const token = authenticateService.generateToken({ _id: user._id });
       res.status(200).send({ token: token });
     } catch (error) {
       this.sendUnauthorizedErrorResponse(res, error);

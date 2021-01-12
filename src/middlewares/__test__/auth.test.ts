@@ -1,9 +1,9 @@
-import AuthService from '@src/services/auth';
+import authenticateService from '@src/services/auth';
 import { authorize } from '../auth';
 
 describe('AuthorizeMiddleware', () => {
   test('should verify a JWT token and call the next middleware', () => {
-    const jwtToken = AuthService.generateToken({ data: 'fake' });
+    const jwtToken = authenticateService.generateToken({ data: 'fake' });
     const reqFake = {
       headers: {
         authorization: `Bearer ${jwtToken}`,

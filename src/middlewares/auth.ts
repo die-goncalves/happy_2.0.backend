@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import AuthService from '@src/services/auth';
+import authenticateService from '@src/services/auth';
 import ArchetypeError from '@src/util/errors/ArchetypeError';
 import { userModel } from '@src/models/user';
 
@@ -12,7 +12,7 @@ export function authorize(
     const bearer = req.headers?.authorization;
     const token = bearer?.replace('Bearer', '').trim();
 
-    const decoded = AuthService.decodeToken(token as string);
+    const decoded = authenticateService.decodeToken(token as string);
     req.decoded = decoded;
     next();
   } catch (error) {

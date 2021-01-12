@@ -1,5 +1,5 @@
 import { userModel } from '@src/models/user';
-import AuthService from '@src/services/auth';
+import authenticateService from '@src/services/auth';
 
 describe('Controllers: Users', () => {
   beforeEach(async () => {
@@ -19,7 +19,7 @@ describe('Controllers: Users', () => {
 
       expect(response.status).toBe(201);
       await expect(
-        AuthService.comparePasswords(
+        authenticateService.comparePasswords(
           defaultUser.password,
           response.body.password
         )
@@ -156,7 +156,7 @@ describe('Controllers: Users', () => {
         password: '1234',
       };
       const user = await new userModel(defaultUser).save();
-      const token = AuthService.generateToken({ _id: user._id });
+      const token = authenticateService.generateToken({ _id: user._id });
 
       const response = await global.testRequest
         .get('/user/me')
@@ -177,7 +177,7 @@ describe('Controllers: Users', () => {
         password: '1234',
       };
       const user = new userModel(defaultUser);
-      const token = AuthService.generateToken({ _id: user._id });
+      const token = authenticateService.generateToken({ _id: user._id });
 
       const response = await global.testRequest
         .get('/user/me')

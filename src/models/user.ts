@@ -1,5 +1,5 @@
 import logger from '@src/logger';
-import AuthService from '@src/services/auth';
+import authenticateService from '@src/services/auth';
 import mongoose, { Document, Model } from 'mongoose';
 
 export interface user {
@@ -56,7 +56,9 @@ userSchema.pre<userInterface>('save', async function (): Promise<void> {
     return;
   }
   try {
-    const hashedPassword = await AuthService.hashPassword(this.password);
+    const hashedPassword = await authenticateService.hashPassword(
+      this.password
+    );
     this.password = hashedPassword;
   } catch (err) {
     logger.error(`Error hashing the password for the user ${this.username}`);

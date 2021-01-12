@@ -1,7 +1,7 @@
 import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { userModel } from '@src/models/user';
-import AuthService from '@src/services/auth';
+import authenticateService from '@src/services/auth';
 import mongoose from 'mongoose';
 
 describe('Controllers: Orphan Hosting', () => {
@@ -16,7 +16,7 @@ describe('Controllers: Orphan Hosting', () => {
     await pictureModel.deleteMany({});
     await userModel.deleteMany({});
     const user = await new userModel(defaultUser).save();
-    token = AuthService.generateToken({ _id: user._id });
+    token = authenticateService.generateToken({ _id: user._id });
   });
 
   describe('Create a new orphan hosting', () => {
