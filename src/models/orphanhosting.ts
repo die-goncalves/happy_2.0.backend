@@ -9,6 +9,7 @@ export interface hosting {
   instructions: string;
   opening_hours: string;
   open_on_weekends: boolean;
+  pending: boolean;
 }
 
 const hostingSchema = new mongoose.Schema(
@@ -20,6 +21,7 @@ const hostingSchema = new mongoose.Schema(
     instructions: { type: String, required: true },
     opening_hours: { type: String, required: true },
     open_on_weekends: { type: Boolean, required: true },
+    pending: { type: Boolean, required: true, default: true },
   },
   {
     toObject: {
