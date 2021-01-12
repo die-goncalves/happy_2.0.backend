@@ -3,7 +3,7 @@ import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
 import { NestErrors } from '@src/util/errors/NestErrors';
 import AuthService from '@src/services/auth';
-import { authMiddleware } from '@src/middlewares/auth';
+import { authorize } from '@src/middlewares/auth';
 
 @Controller('user')
 export class UserController extends NestErrors {
@@ -42,7 +42,7 @@ export class UserController extends NestErrors {
     }
   }
   @Get('me')
-  @Middleware(authMiddleware)
+  @Middleware(authorize)
   public async me(req: Request, res: Response): Promise<void> {
     try {
       const id = req.decoded ? req.decoded._id : undefined;

@@ -4,10 +4,10 @@ import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 import host from '@src/view/host';
 import { NestErrors } from '@src/util/errors/NestErrors';
-import { authMiddleware } from '@src/middlewares/auth';
+import { authorize } from '@src/middlewares/auth';
 
 @Controller('hosting')
-@ClassMiddleware(authMiddleware)
+@ClassMiddleware(authorize)
 export class OrphanHostingController extends NestErrors {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {

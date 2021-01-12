@@ -3,7 +3,7 @@ import AuthService from '@src/services/auth';
 import ArchetypeError from '@src/util/errors/ArchetypeError';
 import { userModel } from '@src/models/user';
 
-export function authMiddleware(
+export function authorize(
   req: Partial<Request>,
   res: Partial<Response>,
   next: NextFunction
