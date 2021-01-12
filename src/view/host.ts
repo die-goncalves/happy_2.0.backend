@@ -35,7 +35,7 @@ export default {
     return typeHost;
   },
 
-  async allHosting() {
+  async rated_hosting() {
     let typeHost: hosts;
     const allHost: hosts[] = [];
 

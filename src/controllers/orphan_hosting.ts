@@ -53,10 +53,9 @@ export class OrphanHostingController extends NestErrors {
   }
   @Get('')
   public async index(req: Request, res: Response): Promise<void> {
-    const result = await host.allHosting();
+    const result = await host.rated_hosting();
     res.status(200).send(result);
   }
-
   @Get('pending')
   @Middleware(adm)
   public async pending(req: Request, res: Response): Promise<void> {
