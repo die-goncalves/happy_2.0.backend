@@ -154,6 +154,7 @@ describe('Controllers: Orphan Hosting', () => {
         instructions: 'sample-instructions-a',
         opening_hours: 'sample-availableTime-a',
         open_on_weekends: false,
+        pending: false,
       };
       const newHosting_a = await new hostingModel(defaultHosting_a).save();
       const defaultPicture_a1 = {
@@ -182,8 +183,20 @@ describe('Controllers: Orphan Hosting', () => {
         instructions: 'sample-instructions-b',
         opening_hours: 'sample-availableTime-b',
         open_on_weekends: true,
+        pending: false,
       };
       const newHosting_b = await new hostingModel(defaultHosting_b).save();
+      const defaultHosting_c = {
+        _id: new mongoose.Types.ObjectId('000000000000000000000100'),
+        name: 'sample-name-c',
+        latitude: -11.660795923446559,
+        longitude: -15.784882579454477,
+        about: 'sample-about-c',
+        instructions: 'sample-instructions-c',
+        opening_hours: 'sample-availableTime-c',
+        open_on_weekends: true,
+      };
+      const newHosting_c = await new hostingModel(defaultHosting_c).save();
 
       const response = await global.testRequest
         .get('/hosting')
@@ -200,6 +213,7 @@ describe('Controllers: Orphan Hosting', () => {
             instructions: 'sample-instructions-a',
             opening_hours: 'sample-availableTime-a',
             open_on_weekends: false,
+            pending: false,
             pictures: [
               {
                 _id: '000000000000000000000001',
@@ -222,6 +236,7 @@ describe('Controllers: Orphan Hosting', () => {
             instructions: 'sample-instructions-b',
             opening_hours: 'sample-availableTime-b',
             open_on_weekends: true,
+            pending: false,
           },
         ])
       );

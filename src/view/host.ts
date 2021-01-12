@@ -39,7 +39,7 @@ export default {
     let typeHost: hosts;
     const allHost: hosts[] = [];
 
-    const foundHosting = await hostingModel.find({});
+    const foundHosting = await hostingModel.find({ pending: false });
     for (const host of foundHosting) {
       const foundPictures = await pictureModel.find({
         _idHosting: host._id,
