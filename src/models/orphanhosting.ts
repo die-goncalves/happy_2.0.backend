@@ -9,7 +9,6 @@ export interface hosting {
   instructions: string;
   opening_hours: string;
   open_on_weekends: boolean;
-  pending: boolean;
 }
 
 const hostingSchema = new mongoose.Schema(
@@ -29,6 +28,7 @@ const hostingSchema = new mongoose.Schema(
         // ret.id = doc.id;
         // delete ret._id;
         delete ret.__v;
+        delete ret.pending;
       },
     },
   }

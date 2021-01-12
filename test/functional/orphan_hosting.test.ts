@@ -213,7 +213,6 @@ describe('Controllers: Orphan Hosting', () => {
             instructions: 'sample-instructions-a',
             opening_hours: 'sample-availableTime-a',
             open_on_weekends: false,
-            pending: false,
             pictures: [
               {
                 _id: '000000000000000000000001',
@@ -236,7 +235,6 @@ describe('Controllers: Orphan Hosting', () => {
             instructions: 'sample-instructions-b',
             opening_hours: 'sample-availableTime-b',
             open_on_weekends: true,
-            pending: false,
           },
         ])
       );
@@ -365,7 +363,6 @@ describe('Controllers: Orphan Hosting', () => {
             instructions: 'sample-instructions-a',
             opening_hours: 'sample-availableTime-a',
             open_on_weekends: false,
-            pending: true,
             pictures: [
               {
                 _id: '000000000000000000000001',
@@ -388,7 +385,6 @@ describe('Controllers: Orphan Hosting', () => {
             instructions: 'sample-instructions-b',
             opening_hours: 'sample-availableTime-b',
             open_on_weekends: true,
-            pending: true,
           },
         ])
       );
