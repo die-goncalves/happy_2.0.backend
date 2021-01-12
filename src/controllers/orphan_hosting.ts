@@ -1,10 +1,16 @@
-import { ClassMiddleware, Controller, Get, Post } from '@overnightjs/core';
+import {
+  ClassMiddleware,
+  Controller,
+  Get,
+  Middleware,
+  Post,
+} from '@overnightjs/core';
 import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 import host from '@src/view/host';
 import { NestErrors } from '@src/util/errors/NestErrors';
-import { authorize } from '@src/middlewares/auth';
+import { adm, authorize } from '@src/middlewares/auth';
 
 @Controller('hosting')
 @ClassMiddleware(authorize)
@@ -48,6 +54,13 @@ export class OrphanHostingController extends NestErrors {
   @Get('')
   public async index(req: Request, res: Response): Promise<void> {
     const result = await host.allHosting();
+    res.status(200).send(result);
+  }
+
+  @Get('pending')
+  @Middleware(adm)
+  public async pending(req: Request, res: Response): Promise<void> {
+    const result = await host.pending_hosting();
     res.status(200).send(result);
   }
 }
