@@ -27,8 +27,18 @@ export async function adm(
   res: Partial<Response>,
   next: NextFunction
 ): Promise<void> {
-  const userSpecific = await userModel.findById(req.decoded?._id);
-  const roles = userSpecific?.role;
-  const isAdm = roles?.includes('adm');
-  if (isAdm) next();
+  try {
+    const userSpecific = await userModel.findById(req.decoded?._id);
+    const roles = userSpecific?.role;
+    const isAdm = roles?.includes('adm');
+    if (isAdm) {
+      next();
+    } else {
+      throw new Error('required administrative role.');
+    }
+  } catch (error) {
+    res
+      .status?.(403)
+      .send(ArchetypeError.pack({ code: 403, message: error.message }));
+  }
 }
