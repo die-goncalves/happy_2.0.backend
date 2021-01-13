@@ -1,6 +1,7 @@
 import {
   ClassMiddleware,
   Controller,
+  Delete,
   Get,
   Middleware,
   Post,
@@ -109,5 +110,15 @@ export class OrphanHostingController extends NestErrors {
 
     const result = await host.specificHosting(String(req.query._id));
     res.status(200).send(result);
+  }
+  @Delete('delete')
+  @Middleware(adm)
+  public async delete(req: Request, res: Response): Promise<void> {
+    await hostingModel.findByIdAndRemove(req.query._id);
+    await pictureModel.deleteMany({ _idHosting: req.query._id });
+
+    res.status(200).send({
+      info: 'Successfully deleted',
+    });
   }
 }
