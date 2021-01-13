@@ -1,6 +1,11 @@
 import { hosting, hostingModel } from '@src/models/orphanhosting';
 import { picture, pictureModel } from '@src/models/picture';
 
+export interface matchPictures {
+  id: string;
+  count: number;
+}
+
 interface hosts extends hosting {
   pictures?: picture[];
 }
