@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import config, { IConfig } from 'config';
-const hbs = require('nodemailer-express-handlebars');
+import Email from 'email-templates';
 
 const mailerConfig: IConfig = config.get('App.nodemailer');
 const transporter = nodemailer.createTransport({
@@ -12,16 +12,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const options = {
-  viewEngine: {
-    extName: '.html',
-    partialsDir: path.resolve(__dirname, '../resource'), //__dirname = /modules
-    defaultLayout: false,
+const email = new Email({
+  message: {
+    subject: 'Happy.com | Your password',
+    from: '"Happy.com" <password.reset@happy.com>',
   },
-  viewPath: path.resolve(__dirname, '../resource'),
-  extName: '.html',
-};
+  send: true,
+  preview: false,
+  transport: transporter,
+});
 
-transporter.use('compile', hbs(options));
-
-export default transporter;
+export default email;
