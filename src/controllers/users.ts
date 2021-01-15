@@ -55,4 +55,21 @@ export class UserController extends NestErrors {
       this.sendNotFoundErrorResponse(res, error);
     }
   }
+  @Post('forgot-password')
+  @Middleware(authorize)
+  public forgot_password(req: Request, res: Response): void {
+    const email: string = req.body.email;
+
+    //Expiration date
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+
+    //Generation of token for the user to change the password
+    const token = authenticateService.generateToken({
+      emailAddress: email,
+      expirationDate: now,
+    });
+
+    res.status(200).send({ token: token });
+  }
 }
