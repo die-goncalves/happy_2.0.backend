@@ -4,6 +4,7 @@ import { userModel } from '@src/models/user';
 import { NestErrors } from '@src/util/errors/NestErrors';
 import authenticateService from '@src/services/auth';
 import { authorize } from '@src/middlewares/auth';
+import mail from '@src/modules/mailer';
 
 @Controller('user')
 export class UserController extends NestErrors {
@@ -57,9 +58,14 @@ export class UserController extends NestErrors {
   }
   @Post('forgot-password')
   @Middleware(authorize)
-  public forgot_password(req: Request, res: Response): void {
+  public async forgot_password(req: Request, res: Response): Promise<void> {
     const email: string = req.body.email;
 
+    //Check if the email is registered in the database
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      throw new Error('user not found!');
+    }
     //Expiration date
     const now = new Date();
     now.setHours(now.getHours() + 1);
@@ -69,7 +75,22 @@ export class UserController extends NestErrors {
       emailAddress: email,
       expirationDate: now,
     });
+    const link = `http://localhost:3000/reset-password?t=${token}`;
 
-    res.status(200).send({ token: token });
+    mail
+      .send({
+        template: 'auth',
+        message: {
+          to: email,
+        },
+        locals: {
+          username: user.username,
+          link: link,
+        },
+      })
+      .then(() => res.status(200).send({ token: token }))
+      .catch((error) => {
+        res.send({ error });
+      });
   }
 }
