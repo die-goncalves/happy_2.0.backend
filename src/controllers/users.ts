@@ -59,38 +59,42 @@ export class UserController extends NestErrors {
   @Post('forgot-password')
   @Middleware(authorize)
   public async forgot_password(req: Request, res: Response): Promise<void> {
-    const email: string = req.body.email;
+    try {
+      const email: string = req.body.email;
 
-    //Check if the email is registered in the database
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      throw new Error('user not found!');
-    }
-    //Expiration date
-    const now = new Date();
-    now.setHours(now.getHours() + 1);
+      //Check if the email is registered in the database
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        throw new Error('user not found!');
+      }
+      //Expiration date
+      const now = new Date();
+      now.setHours(now.getHours() + 1);
 
-    //Generation of token for the user to change the password
-    const token = authenticateService.generateToken({
-      emailAddress: email,
-      expirationDate: now,
-    });
-    const link = `http://localhost:3000/reset-password?t=${token}`;
-
-    mail
-      .send({
-        template: 'auth',
-        message: {
-          to: email,
-        },
-        locals: {
-          username: user.username,
-          link: link,
-        },
-      })
-      .then(() => res.status(200).send({ token: token }))
-      .catch((error) => {
-        res.send({ error });
+      //Generation of token for the user to change the password
+      const token = authenticateService.generateToken({
+        emailAddress: email,
+        expirationDate: now,
       });
+      const link = `http://localhost:3000/reset-password?t=${token}`;
+
+      mail
+        .send({
+          template: 'auth',
+          message: {
+            to: email,
+          },
+          locals: {
+            username: user.username,
+            link: link,
+          },
+        })
+        .then(() => res.status(200).send({ token: token }))
+        .catch((error) => {
+          res.send({ error });
+        });
+    } catch (error) {
+      this.sendNotFoundErrorResponse(res, error);
+    }
   }
 }
