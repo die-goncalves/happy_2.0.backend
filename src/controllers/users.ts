@@ -1,10 +1,11 @@
-import { Controller, Get, Middleware, Post } from '@overnightjs/core';
+import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
 import { NestErrors } from '@src/util/errors/NestErrors';
 import authenticateService from '@src/services/auth';
 import { authorize } from '@src/middlewares/auth';
 import mail from '@src/modules/mailer';
+import resetPasswordService from '@src/services/resetPassword';
 
 @Controller('user')
 export class UserController extends NestErrors {
@@ -96,5 +97,25 @@ export class UserController extends NestErrors {
     } catch (error) {
       this.sendNotFoundErrorResponse(res, error);
     }
+  }
+  @Put('reset-password')
+  public async reset_password(req: Request, res: Response): Promise<void> {
+    const token = req.query.t;
+    const { emailAddress } = resetPasswordService.decodeTokenForResetPassword(
+      token as string
+    );
+
+    const newpass = await authenticateService.hashPassword(
+      req.body.new_password
+    );
+
+    await userModel
+      .findOneAndUpdate(
+        { email: emailAddress },
+        { password: newpass },
+        { new: true, useFindAndModify: false }
+      )
+      .then((result) => res.status(200).send(result?.toObject()))
+      .catch((err) => res.status(400).send(err));
   }
 }
