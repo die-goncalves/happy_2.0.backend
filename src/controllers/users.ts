@@ -100,22 +100,28 @@ export class UserController extends NestErrors {
   }
   @Put('reset-password')
   public async reset_password(req: Request, res: Response): Promise<void> {
-    const token = req.query.t;
-    const { emailAddress } = resetPasswordService.decodeTokenForResetPassword(
-      token as string
-    );
+    try {
+      const token = req.query.t;
+      const { emailAddress } = resetPasswordService.decodeTokenForResetPassword(
+        token as string
+      );
+      const user = await userModel.findOne({ email: emailAddress });
+      if (!user) throw new Error('user not found!');
 
-    const newpass = await authenticateService.hashPassword(
-      req.body.new_password
-    );
+      const newpass = await authenticateService.hashPassword(
+        req.body.new_password
+      );
 
-    await userModel
-      .findOneAndUpdate(
-        { email: emailAddress },
-        { password: newpass },
-        { new: true, useFindAndModify: false }
-      )
-      .then((result) => res.status(200).send(result?.toObject()))
-      .catch((err) => res.status(400).send(err));
+      await userModel
+        .findOneAndUpdate(
+          { email: emailAddress },
+          { password: newpass },
+          { new: true, useFindAndModify: false }
+        )
+        .then((result) => res.status(200).send(result?.toObject()))
+        .catch((err) => res.status(400).send(err));
+    } catch (error) {
+      this.sendNotFoundErrorResponse(res, error);
+    }
   }
 }
