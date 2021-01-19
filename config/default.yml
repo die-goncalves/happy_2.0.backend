@@ -8,3 +8,12 @@ App:
   auth:
     key:
     tokenExpiresIn: 
+  nodemailer:
+    host: 
+    port: 
+    auth:
+      user: 
+      pass: 
+  password:
+    key: 
+    tokenExpiresIn: 
