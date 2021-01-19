@@ -1,5 +1,6 @@
 import { userModel } from '@src/models/user';
 import authenticateService from '@src/services/auth';
+import resetPasswordService from '@src/services/resetPassword';
 
 describe('Controllers: Users', () => {
   beforeEach(async () => {
@@ -192,8 +193,8 @@ describe('Controllers: Users', () => {
     });
   });
 
-  describe('Forgot password', () => {
-    test.skip('should generate a token for a valid user to reset their password', async () => {
+  describe.skip('Forgot password', () => {
+    test('should generate a token for a valid user to reset their password', async () => {
       const realDateNow = Date.now.bind(global.Date);
       const mockDate = (new Date(0) as unknown) as string;
       const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
@@ -244,6 +245,42 @@ describe('Controllers: Users', () => {
         name: 'NOT_FOUND',
         message: 'user not found!',
       });
+    });
+  });
+
+  describe('Reset password', () => {
+    test(`should save the user's new password in the database`, async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      const user = await new userModel(defaultUser).save();
+
+      const tokenReset = resetPasswordService.generateTokenForResetPassword({
+        emailAddress: defaultUser.email,
+      });
+
+      const response = await global.testRequest
+        .put('/user/reset-password')
+        .field('new_password', '9876')
+        .field('confirm_password', '9876')
+        .query({ t: tokenReset });
+
+      const isTheSame = await authenticateService.comparePasswords(
+        '9876',
+        response.body.password
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          ...{ _id: user._id.toHexString() },
+          ...defaultUser,
+          ...{ password: response.body.password },
+        })
+      );
+      expect(isTheSame).toBe(true);
     });
   });
 });
