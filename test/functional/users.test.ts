@@ -282,5 +282,29 @@ describe('Controllers: Users', () => {
       );
       expect(isTheSame).toBe(true);
     });
+    test('should return not found, when the user is not found', async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+
+      const tokenReset = resetPasswordService.generateTokenForResetPassword({
+        emailAddress: defaultUser.email,
+      });
+
+      const response = await global.testRequest
+        .put('/user/reset-password')
+        .field('new_password', '9876')
+        .field('confirm_password', '9876')
+        .query({ t: tokenReset });
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({
+        code: 404,
+        name: 'NOT_FOUND',
+        message: 'user not found!',
+      });
+    });
   });
 });
