@@ -306,5 +306,27 @@ describe('Controllers: Users', () => {
         message: 'user not found!',
       });
     });
+    test('should return when the passwords not match', async () => {
+      const defaultUser = {
+        username: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      await new userModel(defaultUser).save();
+
+      const tokenReset = resetPasswordService.generateTokenForResetPassword({
+        emailAddress: defaultUser.email,
+      });
+
+      const response = await global.testRequest
+        .put('/user/reset-password')
+        .field('new_password', '9876')
+        .field('confirm_password', '98765')
+        .query({ t: tokenReset });
+
+      expect(response.body).toEqual({
+        message: 'passwords does not match!',
+      });
+    });
   });
 });
