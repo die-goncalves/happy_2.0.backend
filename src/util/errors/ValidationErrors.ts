@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import logger from '@src/logger';
 import ArchetypeError from '@src/util/errors/ArchetypeError';
 
-export abstract class NestErrors {
+export abstract class ValidationErrors {
   protected sendValidationErrorResponse(
     res: Response,
     error: mongoose.Error.ValidationError | Error

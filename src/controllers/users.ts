@@ -7,7 +7,7 @@ import {
 import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
-import { NestErrors } from '@src/util/errors/NestErrors';
+import { ValidationErrors } from '@src/util/errors/ValidationErrors';
 import authenticateService from '@src/services/auth';
 import { authorize } from '@src/middlewares/auth';
 import mail from '@src/modules/mailer';
@@ -18,7 +18,7 @@ import {
 } from '@src/util/errors/CustomErrors';
 
 @Controller('user')
-export class UserController extends NestErrors {
+export class UserController extends ValidationErrors {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
     try {

@@ -11,12 +11,12 @@ import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
 import host, { matchPictures } from '@src/view/host';
-import { NestErrors } from '@src/util/errors/NestErrors';
+import { ValidationErrors } from '@src/util/errors/ValidationErrors';
 import { adm, authorize } from '@src/middlewares/auth';
 
 @Controller('hosting')
 @ClassMiddleware(authorize)
-export class OrphanHostingController extends NestErrors {
+export class OrphanHostingController extends ValidationErrors {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
     try {
