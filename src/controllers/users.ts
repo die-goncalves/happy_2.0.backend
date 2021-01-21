@@ -108,6 +108,9 @@ export class UserController extends NestErrors {
       const user = await userModel.findOne({ email: emailAddress });
       if (!user) throw new Error('user not found!');
 
+      if (req.body.new_password !== req.body.confirm_password)
+        throw new Error('passwords does not match!');
+
       const newpass = await authenticateService.hashPassword(
         req.body.new_password
       );
@@ -121,7 +124,11 @@ export class UserController extends NestErrors {
         .then((result) => res.status(200).send(result?.toObject()))
         .catch((err) => res.status(400).send(err));
     } catch (error) {
-      this.sendNotFoundErrorResponse(res, error);
+      if (error.message == 'user not found!') {
+        this.sendNotFoundErrorResponse(res, error);
+      } else {
+        res.send({ message: error.message });
+      }
     }
   }
 }
