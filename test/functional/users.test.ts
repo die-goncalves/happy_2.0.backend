@@ -7,7 +7,7 @@ describe('Controllers: Users', () => {
     await userModel.deleteMany({});
   });
 
-  describe.skip('Create a new user', () => {
+  describe('Create a new user', () => {
     test('should successfully create a new user', async () => {
       const defaultUser = {
         username: 'John Doe',
@@ -101,7 +101,7 @@ describe('Controllers: Users', () => {
     });
   });
 
-  describe.skip('Authenticate user', () => {
+  describe('Authenticate user', () => {
     test('should generate a token for a valid user', async () => {
       const defaultUser = {
         username: 'John Doe',
@@ -149,7 +149,7 @@ describe('Controllers: Users', () => {
     });
   });
 
-  describe.skip('User profile info', () => {
+  describe('User profile info', () => {
     test("should return the token's owner profile information", async () => {
       const defaultUser = {
         username: 'John Doe',
@@ -193,7 +193,7 @@ describe('Controllers: Users', () => {
     });
   });
 
-  describe.skip('Forgot password', () => {
+  describe('Forgot password', () => {
     test('should generate a token for a valid user to reset their password', async () => {
       const realDateNow = Date.now.bind(global.Date);
       const mockDate = (new Date(0) as unknown) as string;

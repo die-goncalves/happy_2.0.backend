@@ -42,6 +42,14 @@ export class ClientError extends HttpError {
   }
 }
 
+export class UnauthorizedError extends ClientError {
+  static code = 401;
+
+  constructor(scopeError: httperrorsContent) {
+    super(UnauthorizedError.code, scopeError);
+  }
+}
+
 export class NotFoundError extends ClientError {
   static code = 404;
 

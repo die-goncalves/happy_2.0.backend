@@ -1,3 +1,9 @@
+import logger from '@src/logger';
+import {
+  HttpError,
+  NotFoundError,
+  UnauthorizedError,
+} from '@src/util/errors/HttpError';
 import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Response, Request } from 'express';
 import { userModel } from '@src/models/user';
@@ -6,6 +12,10 @@ import authenticateService from '@src/services/auth';
 import { authorize } from '@src/middlewares/auth';
 import mail from '@src/modules/mailer';
 import resetPasswordService from '@src/services/resetPassword';
+import {
+  CustomErrors,
+  PasswordsNotMatchError,
+} from '@src/util/errors/CustomErrors';
 
 @Controller('user')
 export class UserController extends NestErrors {
@@ -26,7 +36,7 @@ export class UserController extends NestErrors {
 
       const user = await userModel.findOne({ email });
       if (!user) {
-        throw new Error('user not found!');
+        throw new UnauthorizedError({ message: 'user not found!' });
       }
 
       const isValidPassword = await authenticateService.comparePasswords(
@@ -34,13 +44,18 @@ export class UserController extends NestErrors {
         user.password
       );
       if (!isValidPassword) {
-        throw new Error('passwords does not match!');
+        throw new UnauthorizedError({ message: 'passwords does not match!' });
       }
 
       const token = authenticateService.generateToken({ _id: user._id });
       res.status(200).send({ token: token });
     } catch (error) {
-      this.sendUnauthorizedErrorResponse(res, error);
+      if (error instanceof HttpError) {
+        error.sendHttpErrorResponse(res);
+      } else {
+        logger.error(error);
+        throw error;
+      }
     }
   }
   @Get('me')
@@ -50,11 +65,16 @@ export class UserController extends NestErrors {
       const id = req.decoded ? req.decoded._id : undefined;
       const user = await userModel.findById(id);
       if (!user) {
-        throw new Error('user not found!');
+        throw new NotFoundError({ message: 'user not found!' });
       }
       res.status(200).send(user?.toObject());
     } catch (error) {
-      this.sendNotFoundErrorResponse(res, error);
+      if (error instanceof HttpError) {
+        error.sendHttpErrorResponse(res);
+      } else {
+        logger.error(error);
+        throw error;
+      }
     }
   }
   @Post('forgot-password')
@@ -66,7 +86,7 @@ export class UserController extends NestErrors {
       //Check if the email is registered in the database
       const user = await userModel.findOne({ email });
       if (!user) {
-        throw new Error('user not found!');
+        throw new NotFoundError({ message: 'user not found!' });
       }
       //Expiration date
       const now = new Date();
@@ -95,7 +115,12 @@ export class UserController extends NestErrors {
           res.send({ error });
         });
     } catch (error) {
-      this.sendNotFoundErrorResponse(res, error);
+      if (error instanceof HttpError) {
+        error.sendHttpErrorResponse(res);
+      } else {
+        logger.error(error);
+        throw error;
+      }
     }
   }
   @Put('reset-password')
@@ -105,11 +130,12 @@ export class UserController extends NestErrors {
       const { emailAddress } = resetPasswordService.decodeTokenForResetPassword(
         token as string
       );
+
       const user = await userModel.findOne({ email: emailAddress });
-      if (!user) throw new Error('user not found!');
+      if (!user) throw new NotFoundError({ message: 'user not found!' });
 
       if (req.body.new_password !== req.body.confirm_password)
-        throw new Error('passwords does not match!');
+        throw new PasswordsNotMatchError('passwords does not match!');
 
       const newpass = await authenticateService.hashPassword(
         req.body.new_password
@@ -124,10 +150,13 @@ export class UserController extends NestErrors {
         .then((result) => res.status(200).send(result?.toObject()))
         .catch((err) => res.status(400).send(err));
     } catch (error) {
-      if (error.message == 'user not found!') {
-        this.sendNotFoundErrorResponse(res, error);
+      if (error instanceof HttpError) {
+        error.sendHttpErrorResponse(res);
+      } else if (error instanceof CustomErrors) {
+        error.sendCustomErrorsResponse(res);
       } else {
-        res.send({ message: error.message });
+        logger.error(error);
+        throw error;
       }
     }
   }
