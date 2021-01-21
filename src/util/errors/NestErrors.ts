@@ -21,20 +21,6 @@ export abstract class NestErrors {
     }
   }
 
-  protected sendUnauthorizedErrorResponse(res: Response, error: Error): void {
-    logger.error(error);
-    res
-      .status(401)
-      .send(ArchetypeError.pack({ code: 401, message: error.message }));
-  }
-
-  protected sendNotFoundErrorResponse(res: Response, error: Error): void {
-    logger.error(error);
-    res
-      .status(404)
-      .send(ArchetypeError.pack({ code: 404, message: error.message }));
-  }
-
   private manyMongooseValidationError(
     error: mongoose.Error.ValidationError
   ): { code: number; message: string } {
