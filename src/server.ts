@@ -4,8 +4,9 @@ import * as database from '@src/database';
 import config, { IConfig } from 'config';
 import logger from './logger';
 import expressPino from 'express-pino-logger';
+import cors from 'cors';
 import * as http from 'http';
-import { Application } from 'express';
+import express, { Application } from 'express';
 import { OrphanHostingController } from './controllers/orphan_hosting';
 import multer from 'multer';
 import uploadConfig from '@src/util/upload';
@@ -29,9 +30,15 @@ export class SetupServer extends Server {
 
   private setupExpress(): void {
     this.app.use(upload.array('pictures'));
+    this.app.use('/uploads', express.static('uploads'));
     this.app.use(
       expressPino({
         logger,
+      })
+    );
+    this.app.use(
+      cors({
+        origin: '*',
       })
     );
   }
