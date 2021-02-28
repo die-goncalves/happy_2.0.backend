@@ -78,7 +78,6 @@ export class UserController extends ValidationErrors {
     }
   }
   @Post('forgot-password')
-  @Middleware(authorize)
   public async forgot_password(req: Request, res: Response): Promise<void> {
     try {
       const email: string = req.body.email;
@@ -93,11 +92,11 @@ export class UserController extends ValidationErrors {
       now.setHours(now.getHours() + 1);
 
       //Generation of token for the user to change the password
-      const token = authenticateService.generateToken({
+      const tokenReset = resetPasswordService.generateTokenForResetPassword({
         emailAddress: email,
-        expirationDate: now,
       });
-      const link = `http://localhost:3000/reset-password?t=${token}`;
+
+      const link = `http://localhost:3000/reset-password?t=${tokenReset}`;
 
       mail
         .send({
@@ -110,10 +109,30 @@ export class UserController extends ValidationErrors {
             link: link,
           },
         })
-        .then(() => res.status(200).send({ token: token }))
+        .then(() => res.status(200).send({ token: tokenReset }))
         .catch((error) => {
           res.send({ error });
         });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        error.sendHttpErrorResponse(res);
+      } else {
+        logger.error(error);
+        throw error;
+      }
+    }
+  }
+  @Get('get-email')
+  public async getemail(req: Request, res: Response): Promise<void> {
+    try {
+      const email: string = String(req.query._user);
+
+      //Check if the email is registered in the database
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundError({ message: 'user not found!' });
+      }
+      res.status(200).send(user?.toObject());
     } catch (error) {
       if (error instanceof HttpError) {
         error.sendHttpErrorResponse(res);
