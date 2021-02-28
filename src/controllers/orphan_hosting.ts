@@ -1,5 +1,4 @@
 import {
-  ClassMiddleware,
   Controller,
   Delete,
   Get,
@@ -10,12 +9,11 @@ import {
 import { hostingModel } from '@src/models/orphanhosting';
 import { pictureModel } from '@src/models/picture';
 import { Request, Response } from 'express';
-import host, { matchPictures } from '@src/view/host';
+import host from '@src/view/host';
 import { ValidationErrors } from '@src/util/errors/ValidationErrors';
 import { adm, authorize } from '@src/middlewares/auth';
 
 @Controller('hosting')
-@ClassMiddleware(authorize)
 export class OrphanHostingController extends ValidationErrors {
   @Post('create')
   public async create(req: Request, res: Response): Promise<void> {
@@ -59,63 +57,57 @@ export class OrphanHostingController extends ValidationErrors {
     res.status(200).send(result);
   }
   @Get('pending')
-  @Middleware(adm)
+  @Middleware([authorize, adm])
   public async pending(req: Request, res: Response): Promise<void> {
     const result = await host.pending_hosting();
     res.status(200).send(result);
   }
-  @Put('update')
-  @Middleware(adm)
-  public async update(req: Request, res: Response): Promise<void> {
+  @Put('confirm')
+  @Middleware([authorize, adm])
+  public async confirm(req: Request, res: Response): Promise<void> {
     const hostingExpected = { ...req.body, ...{ pending: false } };
     await hostingModel.findByIdAndUpdate(req.query._id, hostingExpected, {
       new: true,
     });
 
-    const multerPictures = req.files as Express.Multer.File[];
-    const dbPictures = await pictureModel.find({
-      _idHosting: req.query._id,
+    const result = await host.specificHosting(String(req.query._id));
+    res.status(200).send(result);
+  }
+  @Put('update')
+  @Middleware([authorize, adm])
+  public async update(req: Request, res: Response): Promise<void> {
+    const hostingExpected = { ...req.body, ...{ pending: false } };
+    await hostingModel.findByIdAndUpdate(req.query._id, hostingExpected, {
+      new: true,
     });
-    let match = 0;
-    const vectorMatch: matchPictures[] = [];
-    for (const [index, idPicture] of dbPictures.entries()) {
-      vectorMatch[index] = {
-        id: idPicture._id,
-        count: 0,
-      };
-    }
-    for (const mpic of multerPictures) {
-      for (const [index, pic] of dbPictures.entries()) {
-        if (pic.filename.indexOf(mpic.originalname) > -1) {
-          match = 1;
-          vectorMatch[index].count = vectorMatch[index].count + 1;
-        }
-      }
-      if (match === 0) {
-        //save picture
-        const storedPhoto = new pictureModel({
-          _idHosting: req.query._id,
-          destination: mpic.destination,
-          filename: mpic.filename,
-          size: mpic.size,
-        });
-        await storedPhoto.save();
-      }
-      match = 0;
-    }
-    for (const deletePicture of vectorMatch) {
-      if (deletePicture.count === 0)
-        await pictureModel.findByIdAndRemove(deletePicture.id);
-    }
+    const photos = req.files as Express.Multer.File[];
+    photos.map(async (photo) => {
+      const storedPhoto = new pictureModel({
+        _idHosting: req.query._id,
+        destination: photo.destination,
+        filename: photo.filename,
+        size: photo.size,
+      });
+      await storedPhoto.save();
+    });
 
     const result = await host.specificHosting(String(req.query._id));
     res.status(200).send(result);
   }
   @Delete('delete')
-  @Middleware(adm)
+  @Middleware([authorize, adm])
   public async delete(req: Request, res: Response): Promise<void> {
     await hostingModel.findByIdAndRemove(req.query._id);
     await pictureModel.deleteMany({ _idHosting: req.query._id });
+
+    res.status(200).send({
+      info: 'Successfully deleted',
+    });
+  }
+  @Delete('picture')
+  @Middleware([authorize, adm])
+  public async delete_pictures(req: Request, res: Response): Promise<void> {
+    await pictureModel.findByIdAndRemove(req.query.delete);
 
     res.status(200).send({
       info: 'Successfully deleted',
